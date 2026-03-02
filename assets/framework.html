@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DevOps-MAS Advanced Architecture with MCP</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f3f7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        .container {
+            width: 1200px;
+            height: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1a237e;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-right {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .architecture {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 10px;
+            padding: 15px;
+            height: calc(100% - 48px);
+        }
+
+        .layer {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 8px;
+            position: relative;
+            overflow: auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .layer:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #bbdefb;
+        }
+
+        .layer-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .layer-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+
+        .component {
+            margin: 5px 0;
+            padding: 5px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #34495e;
+            border-left: 3px solid #e0e0e0;
+        }
+
+        .component:hover {
+            background: #eff7ff;
+            border-left-color: #2196f3;
+        }
+
+        .component-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .tech-tag {
+            display: inline-block;
+            padding: 1px 5px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-right: 3px;
+            margin-top: 2px;
+        }
+
+        .tech-tag.advanced {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .tech-tag.experimental {
+            background: #fff8e1;
+            color: #ff8f00;
+        }
+
+        .description {
+            font-size: 10px;
+            color: #666;
+            margin-top: 3px;
+            line-height: 1.3;
+        }
+
+        .flow-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 6px 0 6px 8px;
+            border-color: transparent transparent transparent #3498db;
+            z-index: 10;
+        }
+
+        .flow-line {
+            position: absolute;
+            background: #3498db;
+            height: 2px;
+            z-index: 9;
+        }
+
+        /* Special styles for MCP */
+        .mcp-layer {
+            background: #f3f8ff;
+            border: 1px solid #b3d8ff;
+        }
+
+        .mcp-component {
+            background: #e6f3ff;
+            border-left-color: #64b5f6;
+        }
+
+        /* Grid positioning */
+        .mcp-server { grid-area: 1 / 1 / 3 / 2; }
+        .mcp-protocol { grid-area: 1 / 2 / 2 / 3; }
+        .mcp-client { grid-area: 2 / 2 / 3 / 3; }
+        .mcp-extensions { grid-area: 5 / 1 / 7 / 2; }
+        .mcp-tools { grid-area: 3 / 1 / 5 / 2; }
+        
+        .core-orchestration { grid-area: 1 / 3 / 3 / 4; }
+        .agent-system { grid-area: 3 / 2 / 5 / 4; }
+        .privacy-security { grid-area: 1 / 4 / 2 / 5; }
+        .monitoring { grid-area: 2 / 4 / 3 / 5; }
+        
+        .knowledge-management { grid-area: 3 / 4 / 5 / 5; }
+        .vector-storage { grid-area: 5 / 3 / 6 / 4; }
+        .document-processing { grid-area: 5 / 2 / 6 / 3; }
+        
+        .rag-system { grid-area: 5 / 4 / 7 / 5; }
+        .integration-layer { grid-area: 6 / 2 / 7 / 4; }
+
+        .small-connector {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #3498db;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        
+        .data-flow-label {
+            position: absolute;
+            font-size: 9px;
+            color: #777;
+            background: white;
+            padding: 1px 3px;
+            border-radius: 2px;
+            z-index: 11;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>DevOps-MAS Advanced Architecture with MCP</div>
+            <div class="header-right">v2.0.0 | Last Updated: 2023-06-15</div>
+        </div>
+        <div class="architecture">
+            <!-- MCP Core Components -->
+            <div class="layer mcp-layer mcp-server">
+                <div class="layer-title">
+                    <span>MCP Server Core</span>
+                    <span class="layer-badge">Protocol Engine</span>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">Server Runtime</div>
+                    <div class="tech-tag">FastMCP</div>
+                    <div class="tech-tag">asyncio</div>
+                    <div class="tech-tag advanced">WebSocket</div>
+                    <div class="description">高性能异步MCP服务器实现，处理AI模型资源请求和响应</div>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">Protocol Handler</div>
+                    <div class="tech-tag">JSON Schema</div>
+                    <div class="tech-tag">Message Queue</div>
+                    <div class="description">处理MCP消息格式、验证和路由功能</div>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">Service Registry</div>
+                    <div class="tech-tag">Service Discovery</div>
+                    <div class="tech-tag advanced">Dynamic Loading</div>
+                    <div class="description">MCP工具和服务的注册、发现和动态加载系统</div>
+                </div>
+            </div>
+
+            <div class="layer mcp-layer mcp-protocol">
+                <div class="layer-title">
+                    <span>MCP Protocol</span>
+                    <span class="layer-badge">Standard</span>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">Message Formats</div>
+                    <div class="tech-tag">Request/Response</div>
+                    <div class="tech-tag">Stream</div>
+                    <div class="description">标准化的消息格式定义和处理</div>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">Schema Validation</div>
+                    <div class="tech-tag">OpenAPI</div>
+                    <div class="description">基于OpenAPI规范的请求验证</div>
+                </div>
+            </div>
+
+            <div class="layer mcp-layer mcp-client">
+                <div class="layer-title">
+                    <span>MCP Client Adapter</span>
+                    <span class="layer-badge">Interface</span>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">Model Adapters</div>
+                    <div class="tech-tag">Claude</div>
+                    <div class="tech-tag">GPT</div>
+                    <div class="tech-tag experimental">Gemini</div>
+                    <div class="description">支持各类AI模型的适配器和连接器</div>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">Client SDK</div>
+                    <div class="tech-tag">Python</div>
+                    <div class="tech-tag">TypeScript</div>
+                    <div class="description">对接不同语言的客户端SDK</div>
+                </div>
+            </div>
+
+            <div class="layer mcp-layer mcp-tools">
+                <div class="layer-title">
+                    <span>MCP Tool System</span>
+                    <span class="layer-badge">Core</span>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">File Tools</div>
+                    <div class="tech-tag">Read/Write</div>
+                    <div class="tech-tag">Search</div>
+                    <div class="description">文件系统访问、搜索和操作工具</div>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">Database Tools</div>
+                    <div class="tech-tag">SQL</div>
+                    <div class="tech-tag">NoSQL</div>
+                    <div class="description">数据库连接、查询和管理工具</div>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">System Tools</div>
+                    <div class="tech-tag">Process</div>
+                    <div class="tech-tag">Environment</div>
+                    <div class="description">系统进程和环境访问工具</div>
+                </div>
+            </div>
+
+            <div class="layer mcp-layer mcp-extensions">
+                <div class="layer-title">
+                    <span>MCP Extensions</span>
+                    <span class="layer-badge">Specialized</span>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">DevOps Integration</div>
+                    <div class="tech-tag">JIRA</div>
+                    <div class="tech-tag">GitHub</div>
+                    <div class="tech-tag">Confluence</div>
+                    <div class="description">开发与运维工具集成模块</div>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">Engineering Tools</div>
+                    <div class="tech-tag">Code Analysis</div>
+                    <div class="tech-tag experimental">Execution</div>
+                    <div class="description">代码分析与执行环境工具</div>
+                </div>
+                <div class="component mcp-component">
+                    <div class="component-title">Monitoring Tools</div>
+                    <div class="tech-tag">Prometheus</div>
+                    <div class="tech-tag">Grafana</div>
+                    <div class="description">监控系统集成工具</div>
+                </div>
+            </div>
+
+            <!-- Core System Components -->
+            <div class="layer core-orchestration">
+                <div class="layer-title">
+                    <span>Core Orchestration</span>
+                    <span class="layer-badge">Central</span>
+                </div>
+                <div class="component">
+                    <div class="component-title">Request Handler</div>
+                    <div class="tech-tag">Request Pipeline</div>
+                    <div class="tech-tag">Context Management</div>
+                    <div class="description">处理请求流程，管理上下文和状态</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Agent Router</div>
+                    <div class="tech-tag">Intent Analysis</div>
+                    <div class="tech-tag">Agent Selection</div>
+                    <div class="description">根据意图和内容路由到合适的专业代理</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Task Scheduler</div>
+                    <div class="tech-tag">Task Queue</div>
+                    <div class="tech-tag">Priority</div>
+                    <div class="description">任务调度和执行优先级管理</div>
+                </div>
+            </div>
+
+            <div class="layer agent-system">
+                <div class="layer-title">
+                    <span>Agent System</span>
+                    <span class="layer-badge">Multi-Agent</span>
+                </div>
+                <div class="component">
+                    <div class="component-title">Engineering Agent</div>
+                    <div class="tech-tag">Code Analysis</div>
+                    <div class="tech-tag">Debugging</div>
+                    <div class="tech-tag">Architecture</div>
+                    <div class="description">专门处理软件工程和架构相关问题</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Operations Agent</div>
+                    <div class="tech-tag">Troubleshooting</div>
+                    <div class="tech-tag">Performance</div>
+                    <div class="description">专门处理系统运维和故障排查</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Routing Agent</div>
+                    <div class="tech-tag">Question Analysis</div>
+                    <div class="tech-tag">Agent Selection</div>
+                    <div class="description">分析问题并选择合适的专业代理</div>
+                </div>
+            </div>
+
+            <div class="layer privacy-security">
+                <div class="layer-title">
+                    <span>Privacy & Security</span>
+                    <span class="layer-badge">Protection</span>
+                </div>
+                <div class="component">
+                    <div class="component-title">Privacy Adapter</div>
+                    <div class="tech-tag">PII Detection</div>
+                    <div class="tech-tag">Data Masking</div>
+                    <div class="description">敏感信息检测和脱敏处理</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Access Control</div>
+                    <div class="tech-tag">Authentication</div>
+                    <div class="tech-tag">Authorization</div>
+                    <div class="description">资源访问控制和权限管理</div>
+                </div>
+            </div>
+
+            <div class="layer monitoring">
+                <div class="layer-title">
+                    <span>Monitoring & Logging</span>
+                    <span class="layer-badge">Observability</span>
+                </div>
+                <div class="component">
+                    <div class="component-title">Telemetry</div>
+                    <div class="tech-tag">Metrics</div>
+                    <div class="tech-tag">Tracing</div>
+                    <div class="description">系统性能和运行状态监控</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Audit Logging</div>
+                    <div class="tech-tag">Request Log</div>
+                    <div class="tech-tag">Access Log</div>
+                    <div class="description">请求和访问审计日志记录</div>
+                </div>
+            </div>
+
+            <!-- Knowledge Components -->
+            <div class="layer knowledge-management">
+                <div class="layer-title">
+                    <span>Knowledge Management</span>
+                    <span class="layer-badge">Storage</span>
+                </div>
+                <div class="component">
+                    <div class="component-title">Knowledge Base</div>
+                    <div class="tech-tag">Version Control</div>
+                    <div class="tech-tag">Sync Service</div>
+                    <div class="description">知识库的版本控制和同步服务</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Knowledge Graph</div>
+                    <div class="tech-tag">Entity Linking</div>
+                    <div class="tech-tag experimental">Reasoning</div>
+                    <div class="description">实体关系和知识图谱构建</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Metadata Management</div>
+                    <div class="tech-tag">Tagging</div>
+                    <div class="tech-tag">Classification</div>
+                    <div class="description">文档元数据管理和分类</div>
+                </div>
+            </div>
+
+            <div class="layer vector-storage">
+                <div class="layer-title">
+                    <span>Vector Storage</span>
+                    <span class="layer-badge">Embedding</span>
+                </div>
+                <div class="component">
+                    <div class="component-title">Vector Database</div>
+                    <div class="tech-tag">FAISS</div>
+                    <div class="tech-tag">HNSW</div>
+                    <div class="description">高性能向量数据库存储和检索</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Index Management</div>
+                    <div class="tech-tag">Sharding</div>
+                    <div class="tech-tag">Optimization</div>
+                    <div class="description">向量索引管理和优化</div>
+                </div>
+            </div>
+
+            <div class="layer document-processing">
+                <div class="layer-title">
+                    <span>Document Processing</span>
+                    <span class="layer-badge">Pipeline</span>
+                </div>
+                <div class="component">
+                    <div class="component-title">Document Processor</div>
+                    <div class="tech-tag">Chunking</div>
+                    <div class="tech-tag">Extraction</div>
+                    <div class="description">文档处理和内容抽取</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Embedding Service</div>
+                    <div class="tech-tag">Sentence-BERT</div>
+                    <div class="tech-tag">All-MiniLM</div>
+                    <div class="description">文档向量化和嵌入生成</div>
+                </div>
+            </div>
+
+            <!-- Output & Integration -->
+            <div class="layer rag-system">
+                <div class="layer-title">
+                    <span>RAG System</span>
+                    <span class="layer-badge">Retrieval+Generation</span>
+                </div>
+                <div class="component">
+                    <div class="component-title">Retrieval Engine</div>
+                    <div class="tech-tag">Semantic Search</div>
+                    <div class="tech-tag">Hybrid Retrieval</div>
+                    <div class="description">基于向量和关键词的混合检索引擎</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Query Processing</div>
+                    <div class="tech-tag">Query Expansion</div>
+                    <div class="tech-tag">Rewriting</div>
+                    <div class="description">查询处理、扩展和重写</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Context Integration</div>
+                    <div class="tech-tag">Reranking</div>
+                    <div class="tech-tag">Fusion</div>
+                    <div class="description">检索结果重排序和融合</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Response Generator</div>
+                    <div class="tech-tag">Template</div>
+                    <div class="tech-tag">Dynamic</div>
+                    <div class="description">基于检索上下文的回答生成</div>
+                </div>
+            </div>
+
+            <div class="layer integration-layer">
+                <div class="layer-title">
+                    <span>Integration Layer</span>
+                    <span class="layer-badge">External</span>
+                </div>
+                <div class="component">
+                    <div class="component-title">API Gateway</div>
+                    <div class="tech-tag">RESTful</div>
+                    <div class="tech-tag">GraphQL</div>
+                    <div class="description">对外API接口和网关</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">Service Connectors</div>
+                    <div class="tech-tag">OAuth</div>
+                    <div class="tech-tag">Webhook</div>
+                    <div class="description">外部服务连接器和认证</div>
+                </div>
+                <div class="component">
+                    <div class="component-title">UI Integration</div>
+                    <div class="tech-tag">Web</div>
+                    <div class="tech-tag">IDE</div>
+                    <div class="description">用户界面集成和展示</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add data flow indicators
+        document.addEventListener('DOMContentLoaded', () => {
+            // Connection lines would be added here in a production environment
+            // This is intentionally simplified for this example
+        });
+    </script>
+</body>
+</html>

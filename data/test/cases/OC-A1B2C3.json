@@ -1,0 +1,56 @@
+{
+  "case_id": "OC-A1B2C3",
+  "title": "Redis Cluster Node Failure Causing Recommendation API Timeout",
+  "description": "Recommendation API p99 latency spiked to 2340ms. Root cause traced to redis-cluster-03 node failure.",
+  "status": "resolved",
+  "priority": "P1",
+  "created_at": 1772007279.9183848,
+  "updated_at": 1772009079.918386,
+  "resolved_at": 1772009079.918386,
+  "root_cause": "Redis cluster node redis-cluster-03 (10.0.1.52) experienced OOM kill due to memory leak in Lua script execution. Connection pool was exhausted (50/50).",
+  "solution": "1. Restarted redis-cluster-03 node\n2. Increased maxmemory from 4GB to 8GB\n3. Fixed Lua script memory leak\n4. Added connection pool monitoring alert",
+  "tags": [
+    "redis",
+    "timeout",
+    "cache",
+    "recommendation",
+    "P1"
+  ],
+  "related_logs": [
+    "data/test/logs/redis_error.log"
+  ],
+  "events": [
+    {
+      "timestamp": 1772007279.918386,
+      "event_type": "created",
+      "content": "Alert triggered: redis_connection_failure"
+    },
+    {
+      "timestamp": 1772007399.918387,
+      "event_type": "message",
+      "content": "DevOps-MAS analyzed logs and identified redis-cluster-03 as the failing node",
+      "agent_name": "log_analysis_agent"
+    },
+    {
+      "timestamp": 1772007579.918387,
+      "event_type": "diagnosis",
+      "content": "Root cause: OOM kill on redis-cluster-03 due to Lua script memory leak",
+      "agent_name": "comprehensive_agent"
+    },
+    {
+      "timestamp": 1772008479.918388,
+      "event_type": "resolution",
+      "content": "Node restarted, maxmemory increased, Lua script fixed",
+      "agent_name": "knowledge_agent"
+    },
+    {
+      "timestamp": 1772009079.918388,
+      "event_type": "status_change",
+      "content": "Case resolved"
+    }
+  ],
+  "metadata": {
+    "resolution_time_min": 30,
+    "affected_users": 15000
+  }
+}

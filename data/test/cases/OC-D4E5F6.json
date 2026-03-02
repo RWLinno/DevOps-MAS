@@ -1,0 +1,53 @@
+{
+  "case_id": "OC-D4E5F6",
+  "title": "Kafka Consumer Lag Causing Data Pipeline Delay",
+  "description": "Data pipeline consumer lag exceeded 50K messages on user-events topic partition 7.",
+  "status": "resolved",
+  "priority": "P1",
+  "created_at": 1772093679.918389,
+  "updated_at": 1772097279.918389,
+  "resolved_at": 1772097279.918389,
+  "root_cause": "NullPointerException in EventProcessor.java:142 caused consumer to repeatedly fail and rebalance. Dead letter queue accumulated 1523 messages.",
+  "solution": "1. Fixed NPE in EventProcessor with null check\n2. Replayed DLQ messages\n3. Added input validation in pipeline\n4. Increased consumer group parallelism from 3 to 6",
+  "tags": [
+    "kafka",
+    "consumer-lag",
+    "pipeline",
+    "NPE",
+    "P1"
+  ],
+  "related_logs": [
+    "data/test/logs/kafka_error.log"
+  ],
+  "events": [
+    {
+      "timestamp": 1772093679.91839,
+      "event_type": "created",
+      "content": "Alert: kafka_consumer_lag_high"
+    },
+    {
+      "timestamp": 1772094279.91839,
+      "event_type": "message",
+      "content": "Log analysis found NPE in EventProcessor.java:142",
+      "agent_name": "log_analysis_agent"
+    },
+    {
+      "timestamp": 1772094879.91839,
+      "event_type": "diagnosis",
+      "content": "NPE causing consumer rebalance loop",
+      "agent_name": "log_analysis_agent"
+    },
+    {
+      "timestamp": 1772097279.91839,
+      "event_type": "resolution",
+      "content": "NPE fixed, DLQ replayed, parallelism increased"
+    }
+  ],
+  "metadata": {
+    "resolution_time_min": 60,
+    "affected_services": [
+      "data-pipeline",
+      "recommendation"
+    ]
+  }
+}

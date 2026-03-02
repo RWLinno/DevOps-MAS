@@ -1,0 +1,55 @@
+{
+  "case_id": "OC-G7H8I9",
+  "title": "MySQL Connection Pool Exhaustion on Order Service",
+  "description": "Order service unable to acquire database connections. All 500 connections consumed.",
+  "status": "resolved",
+  "priority": "P0",
+  "created_at": 1772180079.918391,
+  "updated_at": 1772182779.918391,
+  "resolved_at": 1772182779.9183922,
+  "root_cause": "Slow query (full table scan on orders table, 2.8M rows) holding connections for 12+ seconds. Missing index on (status, created_at) columns.",
+  "solution": "1. Killed long-running queries\n2. Added index: CREATE INDEX idx_orders_status_created ON orders(status, created_at)\n3. Increased max_connections to 800 temporarily\n4. Implemented query timeout at application level (5s)\n5. Added slow query alert threshold",
+  "tags": [
+    "mysql",
+    "connection-pool",
+    "slow-query",
+    "index",
+    "P0"
+  ],
+  "related_logs": [
+    "data/test/logs/mysql_error.log"
+  ],
+  "events": [
+    {
+      "timestamp": 1772180079.9183922,
+      "event_type": "created",
+      "content": "P0 Alert: mysql_connection_exhausted"
+    },
+    {
+      "timestamp": 1772180259.9183922,
+      "event_type": "message",
+      "content": "Immediate: Killed 23 long-running queries",
+      "agent_name": "comprehensive_agent"
+    },
+    {
+      "timestamp": 1772180679.9183922,
+      "event_type": "diagnosis",
+      "content": "Missing index causing full table scan on orders",
+      "agent_name": "log_analysis_agent"
+    },
+    {
+      "timestamp": 1772181879.9183922,
+      "event_type": "message",
+      "content": "Index created, connections normalizing"
+    },
+    {
+      "timestamp": 1772182779.9183931,
+      "event_type": "resolution",
+      "content": "All fixes applied, monitoring stable for 15min"
+    }
+  ],
+  "metadata": {
+    "resolution_time_min": 45,
+    "revenue_impact": "$12,000"
+  }
+}

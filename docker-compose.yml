@@ -1,0 +1,80 @@
+
+version: '3.8'
+
+services:
+  devops-mas-api:
+    build: .
+    container_name: devops-mas-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./config.json:/app/config.json
+      - ./api.env:/app/api.env
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - devops-mas-network
+
+  devops-mas-gui:
+    build: .
+    container_name: devops-mas-gui
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./config.json:/app/config.json
+      - ./api.env:/app/api.env
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    command: ["streamlit", "run", "web/streamlit_app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    restart: unless-stopped
+    depends_on:
+      - devops-mas-api
+    networks:
+      - devops-mas-network
+
+  # Optional: Redis cache service
+  redis:
+    image: redis:7-alpine
+    container_name: devops-mas-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - devops-mas-network
+
+  # Optional: PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    container_name: devops-mas-postgres
+    environment:
+      - POSTGRES_DB=devops_mas
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=your_postgres_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - devops-mas-network
+
+networks:
+  devops-mas-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+  postgres_data:

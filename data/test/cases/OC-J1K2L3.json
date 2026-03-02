@@ -1,0 +1,31 @@
+{
+  "case_id": "OC-J1K2L3",
+  "title": "API Gateway Certificate Expiration Warning",
+  "description": "SSL certificate for api.example.com expiring in 7 days. Needs renewal before expiration.",
+  "status": "open",
+  "priority": "P2",
+  "created_at": 1772262879.918394,
+  "updated_at": 1772262879.918394,
+  "resolved_at": null,
+  "root_cause": null,
+  "solution": null,
+  "tags": [
+    "ssl",
+    "certificate",
+    "api-gateway",
+    "maintenance",
+    "P2"
+  ],
+  "related_logs": [],
+  "events": [
+    {
+      "timestamp": 1772262879.918394,
+      "event_type": "created",
+      "content": "Certificate expiration warning: api.example.com expires in 7 days"
+    }
+  ],
+  "metadata": {
+    "cert_expiry": "2026-03-07",
+    "domain": "api.example.com"
+  }
+}
